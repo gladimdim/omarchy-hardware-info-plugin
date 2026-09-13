@@ -470,7 +470,7 @@ def get_dynamic_stats(static_data):
                 m = re.search(r"\+([\d\.]+)\s*°C", line)
                 if m:
                     sensors_data["cpu_temp_c"] = float(m.group(1))
-            elif "cpu_fan:" in line or "fan1:" in line:
+            elif re.search(r"\b(?:cpu_fan|fan\d*|exhaust)\s*:", line, re.IGNORECASE):
                 m = re.search(r"(\d+)\s*RPM", line)
                 if m:
                     sensors_data["fan_rpm"] = int(m.group(1))
