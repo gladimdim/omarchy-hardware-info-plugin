@@ -473,7 +473,11 @@ def get_dynamic_stats(static_data):
             elif re.search(r"\b(?:cpu_fan|fan\d*|exhaust)\s*:", line, re.IGNORECASE):
                 m = re.search(r"(\d+)\s*RPM", line)
                 if m:
-                    sensors_data["fan_rpm"] = int(m.group(1))
+                    # Several chips may report fans (e.g. thinkpad + a stuck-at-0 acpi_fan);
+                    # keep the fastest one and drop bogus readings from unconnected headers.
+                    rpm = int(m.group(1))
+                    if rpm <= 20000:
+                        sensors_data["fan_rpm"] = max(sensors_data["fan_rpm"] or 0, rpm)
             elif "Composite:" in line:
                 m = re.search(r"\+([\d\.]+)\s*°C", line)
                 if m:
